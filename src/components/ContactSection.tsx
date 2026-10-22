@@ -65,8 +65,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   };
 
   const openGoogleMaps = () => {
-    const query = encodeURIComponent('Poblacion Domingo Ortiz de Rozas, Los Alamos 11');
-    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+    window.open('https://www.google.com/maps/search/?api=1&query=-36.484667,-72.71125', '_blank');
   };
 
   return (
@@ -101,7 +100,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             <div
               onClick={openGoogleMaps}
               className="p-4 rounded-2xl bg-stone-50 border border-stone-200 hover:border-[#16A01A] hover:bg-emerald-50/50 cursor-pointer transition-all group shadow-2xs"
-              title="Abrir en Google Maps"
+              title="Abrir ubicación en Google Maps"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
@@ -114,14 +113,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                         Dirección del Vivero
                       </h4>
                       <span className="text-[10px] bg-[#16A01A] text-white px-2 py-0.2 rounded-full font-semibold">
-                        Ver Mapa
+                        Ver en Maps
                       </span>
                     </div>
-                    <p className="text-xs sm:text-sm text-stone-800 font-medium mt-1">
-                      Población Domingo Ortiz de Rozas, Los Álamos 11
+                    <p className="text-xs sm:text-sm text-stone-800 font-bold mt-1">
+                      Los Álamos 11, Coelemu
                     </p>
                     <p className="text-[11px] text-[#16A01A] font-semibold mt-1 flex items-center gap-1">
-                      <span>Tocar para abrir en Google Maps</span>
+                      <span>Tocar para abrir ubicación exacta en Google Maps</span>
                       <ExternalLink className="w-3 h-3" />
                     </p>
                   </div>

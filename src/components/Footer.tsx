@@ -16,8 +16,7 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   const openGoogleMaps = () => {
-    const query = encodeURIComponent('Poblacion Domingo Ortiz de Rozas, Los Alamos 11');
-    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+    window.open('https://www.google.com/maps/search/?api=1&query=-36.484667,-72.71125', '_blank');
   };
 
   return (
@@ -141,7 +140,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <MapPin className="w-4 h-4 text-[#16A01A] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
                   <div>
                     <span className="text-stone-200 block font-medium">
-                      Población Domingo Ortiz de Rozas, Los Álamos 11
+                      Los Álamos 11, Coelemu
                     </span>
                     <span className="text-[10px] text-emerald-400 flex items-center gap-1">
                       Abrir en Google Maps <ExternalLink className="w-2.5 h-2.5" />
