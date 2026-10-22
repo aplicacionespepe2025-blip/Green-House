@@ -1,0 +1,240 @@
+{
+  "entities": {
+    "Plant": {
+      "title": "Plant",
+      "description": "Planta del catálogo del vivero con información de inventario y cuidados",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador único de la planta",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Nombre común de la planta",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "scientificName": {
+          "type": "string",
+          "description": "Nombre botánico o científico",
+          "maxLength": 150
+        },
+        "category": {
+          "type": "string",
+          "description": "Categoría (Interior, Exterior, Floración, Arbusto, etc.)",
+          "enum": ["Interior", "Exterior", "Floración", "Sombra", "Aromáticas", "Colgantes", "Arbustos y Árboles"]
+        },
+        "price": {
+          "type": "number",
+          "description": "Precio en moneda local"
+        },
+        "inStock": {
+          "type": "boolean",
+          "description": "Indica si la planta está disponible actualmente"
+        },
+        "stockCount": {
+          "type": "number",
+          "description": "Cantidad de unidades disponibles"
+        },
+        "description": {
+          "type": "string",
+          "description": "Descripción general de la planta",
+          "maxLength": 1000
+        },
+        "careLight": {
+          "type": "string",
+          "description": "Requerimientos de luz solar",
+          "maxLength": 300
+        },
+        "careWater": {
+          "type": "string",
+          "description": "Frecuencia y pauta de riego recomendada",
+          "maxLength": 300
+        },
+        "careTemp": {
+          "type": "string",
+          "description": "Rango de temperatura ideal y resistencia al frío",
+          "maxLength": 300
+        },
+        "careSubstrate": {
+          "type": "string",
+          "description": "Tipo de sustrato y drenaje",
+          "maxLength": 300
+        },
+        "careTips": {
+          "type": "string",
+          "description": "Consejo experto familiar para esta especie",
+          "maxLength": 600
+        },
+        "difficulty": {
+          "type": "string",
+          "description": "Nivel de dificultad de cultivo",
+          "enum": ["Muy fácil", "Fácil", "Moderado", "Experto"]
+        },
+        "isPetFriendly": {
+          "type": "boolean",
+          "description": "Si es segura o no para gatos y perros"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL de imagen o data URL base64 de la planta",
+          "maxLength": 500000
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Destacada en portada"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Fecha de última modificación ISO"
+        }
+      },
+      "required": ["name", "category", "price", "inStock"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Opinión y valoración de una clienta sobre una planta o el vivero",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "userName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "rating": {
+          "type": "number",
+          "description": "Puntuación de 1 a 5 estrellas"
+        },
+        "comment": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 800
+        },
+        "plantId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "plantName": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      },
+      "required": ["userName", "rating", "comment", "date"]
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "Mensaje de contacto o consulta de disponibilidad de plantas",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "plantInterest": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "message": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 1000
+        },
+        "status": {
+          "type": "string",
+          "enum": ["nuevo", "atendido", "archivado"]
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "email", "message"]
+    },
+    "UserPlant": {
+      "title": "UserPlant",
+      "description": "Registro de planta en el jardín personal de la usuaria para seguimiento de riego",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "plantId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "nickname": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "plantName": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "lastWatered": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "waterFrequencyDays": {
+          "type": "number"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "addedAt": {
+          "type": "string",
+          "maxLength": 50
+        }
+      },
+      "required": ["plantName", "waterFrequencyDays"]
+    }
+  },
+  "firestore": {
+    "/plants/{plantId}": {
+      "schema": "Plant",
+      "description": "Inventario de plantas del vivero visible para todos los clientes"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Opiniones y testimonios de compradores"
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "Mensajes y peticiones de contacto recibidos"
+    },
+    "/users/{userId}/garden/{userPlantId}": {
+      "schema": "UserPlant",
+      "description": "Historial de plantas y recordatorios de cuidado del usuario"
+    }
+  }
+}

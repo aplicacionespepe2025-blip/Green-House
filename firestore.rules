@@ -1,0 +1,120 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all unknown paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email == 'aplicaciones.pepe2025@gmail.com' &&
+        request.auth.token.email_verified == true;
+    }
+
+    // Validation for Plants
+    function isValidPlant(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.category is string && data.category.size() <= 60 &&
+             data.price is number && data.price >= 0 &&
+             data.inStock is bool &&
+             (!('scientificName' in data) || (data.scientificName is string && data.scientificName.size() <= 150)) &&
+             (!('stockCount' in data) || (data.stockCount is number && data.stockCount >= 0)) &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 1500)) &&
+             (!('careLight' in data) || (data.careLight is string && data.careLight.size() <= 500)) &&
+             (!('careWater' in data) || (data.careWater is string && data.careWater.size() <= 500)) &&
+             (!('careTemp' in data) || (data.careTemp is string && data.careTemp.size() <= 500)) &&
+             (!('careSubstrate' in data) || (data.careSubstrate is string && data.careSubstrate.size() <= 500)) &&
+             (!('careTips' in data) || (data.careTips is string && data.careTips.size() <= 1000)) &&
+             (!('difficulty' in data) || (data.difficulty is string && data.difficulty.size() <= 50)) &&
+             (!('isPetFriendly' in data) || data.isPetFriendly is bool) &&
+             (!('imageUrl' in data) || (data.imageUrl is string && data.imageUrl.size() <= 500000)) &&
+             (!('featured' in data) || data.featured is bool) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 100));
+    }
+
+    // Validation for Reviews
+    function isValidReview(data) {
+      return data.userName is string && data.userName.size() >= 2 && data.userName.size() <= 80 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.comment is string && data.comment.size() >= 5 && data.comment.size() <= 800 &&
+             (!('plantId' in data) || (data.plantId is string && data.plantId.size() <= 128)) &&
+             (!('plantName' in data) || (data.plantName is string && data.plantName.size() <= 100)) &&
+             (!('date' in data) || (data.date is string && data.date.size() <= 60)) &&
+             (!('verified' in data) || data.verified is bool);
+    }
+
+    // Validation for Inquiries
+    function isValidInquiry(data) {
+      return data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+             data.email is string && data.email.size() >= 5 && data.email.size() <= 150 &&
+             data.message is string && data.message.size() >= 5 && data.message.size() <= 1200 &&
+             (!('phone' in data) || (data.phone is string && data.phone.size() <= 40)) &&
+             (!('plantInterest' in data) || (data.plantInterest is string && data.plantInterest.size() <= 100)) &&
+             (!('status' in data) || (data.status is string && data.status.size() <= 30)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 60));
+    }
+
+    // Validation for User Plant Diary
+    function isValidUserPlant(data) {
+      return data.plantName is string && data.plantName.size() > 0 && data.plantName.size() <= 100 &&
+             data.waterFrequencyDays is number && data.waterFrequencyDays > 0 && data.waterFrequencyDays <= 365 &&
+             (!('plantId' in data) || (data.plantId is string && data.plantId.size() <= 128)) &&
+             (!('nickname' in data) || (data.nickname is string && data.nickname.size() <= 80)) &&
+             (!('location' in data) || (data.location is string && data.location.size() <= 100)) &&
+             (!('lastWatered' in data) || (data.lastWatered is string && data.lastWatered.size() <= 60)) &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 600)) &&
+             (!('addedAt' in data) || (data.addedAt is string && data.addedAt.size() <= 60));
+    }
+
+    // Plants catalog collection: public read, admin write
+    match /plants/{plantId} {
+      allow get, list: if true;
+      allow create: if isValidId(plantId) && isAdmin() && isValidPlant(incoming());
+      allow update: if isValidId(plantId) && isAdmin() && isValidPlant(incoming());
+      allow delete: if isValidId(plantId) && isAdmin();
+    }
+
+    // Customer reviews: public read, anyone or signed-in can submit review, admin can moderate
+    match /reviews/{reviewId} {
+      allow get, list: if true;
+      allow create: if isValidId(reviewId) && isValidReview(incoming());
+      allow update: if isValidId(reviewId) && isAdmin() && isValidReview(incoming());
+      allow delete: if isValidId(reviewId) && isAdmin();
+    }
+
+    // Contact messages: anyone can submit inquiry, only admin can view/manage PII
+    match /inquiries/{inquiryId} {
+      allow create: if isValidId(inquiryId) && isValidInquiry(incoming());
+      allow get, list: if isAdmin();
+      allow update: if isValidId(inquiryId) && isAdmin();
+      allow delete: if isValidId(inquiryId) && isAdmin();
+    }
+
+    // User personal garden & plant care history
+    match /users/{userId}/garden/{userPlantId} {
+      allow get, list: if isValidId(userId) && isSignedIn() && request.auth.uid == userId;
+      allow create: if isValidId(userId) && isValidId(userPlantId) && isSignedIn() && request.auth.uid == userId && isValidUserPlant(incoming());
+      allow update: if isValidId(userId) && isValidId(userPlantId) && isSignedIn() && request.auth.uid == userId && isValidUserPlant(incoming());
+      allow delete: if isValidId(userId) && isValidId(userPlantId) && isSignedIn() && request.auth.uid == userId;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Vivero La Familia Flora",
+  "description": "Catálogo botánico, cuidados especializados por especie, gestión de inventario en tiempo real y opiniones de clientes para vivero familiar.",
+  "requestFramePermissions": ["notifications"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
